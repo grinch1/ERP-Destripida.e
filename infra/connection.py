@@ -1,4 +1,4 @@
-from config import config ,url
+from infra.config import config ,url
 import mysql.connector
 from mysql.connector.cursor import MySQLCursor
 from mysql.connector import errorcode
