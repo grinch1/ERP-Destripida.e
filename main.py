@@ -1,6 +1,4 @@
-from infra.to_db import Import 
+from infra.update import Import
 
-
-
-Import = Import()
-Import.products()
+update = Import()
+update.products()
