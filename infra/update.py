@@ -50,16 +50,44 @@ class Import():
 			o_records = json.load(o_file)
 			o_file.close()
 			# opening file with client records
-			c_file = open("infra/imported/cliente.json", "r")
+			c_file = open("infra/imported/clientes.json", "r")
 			c_records = json.load(c_file)
 			c_file.close()
+			# opening file with itens records
+			ip_file = open("infra/imported/itens_pedido.json", "r")
+			ip_records = json.load(ip_file)
+			ip_file.close()
 			
 			for order in orders:
 				# splitting cliente
 				client = order['cliente']
 				order.pop('cliente')
-				# insert idCliente to order 
+				# inserting idCliente to order 
 				order['idCliente'] = client['id']
+				# splitting itens
+				itens = order['itens']
+				order.pop('itens')
+
+				for item in itens:
+					# referencing item to order id
+					item = item['item']
+					cod_item = item['codigo']
+					cod_item_order = f"{order['numero']}-{cod_item}"
+					item['idPedido'] = order['numero']
+					# item[cod_item_order] = item['item']
+					# item.pop('item')
+					print(item)
+					if cod_item_order not in ip_records or ip_records[cod_item_order] != item:
+						if cod_item_order in ip_records:
+							print(f'UPDATE: {cod_item_order}\n')
+							print(f'\tOLD: {diff(item, ip_records[cod_item_order])}\n')
+							print(f'\tNEW: {diff(ip_records[cod_item_order], item)}\n')
+						
+						ip_records[cod_item_order] = item
+						ip_file = open("infra/imported/itens_pedido.json", "w")
+						json.dump(ip_records, ip_file)
+						ip_file.close()
+					
 
 				# checking if order was imported already
 				if order['numero'] not in o_records or o_records[order['numero']] != order:
@@ -74,14 +102,13 @@ class Import():
 					o_file.close()
 				# checking if client was imported already
 				if client['id'] not in c_records or c_records[client['id']] != client:
-					print(client)
 					if client['id'] in c_records:
 						print(f'UPDATE: {client["id"]}\n')
 						print(f'\tOLD: {diff(client, c_records[client["id"]])}\n')
 						print(f'\tNEW: {diff(c_records[client["id"]], client)}\n')
 
 					c_records[client['id']] = client
-					c_file = open("infra/imported/cliente.json", "w")
+					c_file = open("infra/imported/clientes.json", "w")
 					json.dump(c_records, c_file)
 					c_file.close()
 					# self._insert_database(table='pedido', obj=order)
