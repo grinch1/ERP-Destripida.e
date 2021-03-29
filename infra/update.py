@@ -2,17 +2,67 @@ import mysql.connector
 from infra.api import Api, ApiError
 from infra.apiKey import api_key
 from infra.connection import Database
-# import pandas as pd
+import pandas as pd
 import json
 from jsondiff import diff
 
 api = Api(api_key)
 class Import():
+
+	def filter_product(self, product):
+		product.pop('tipo')
+		product.pop('descricaoCurta')
+		product.pop('descricaoComplementar')
+		product.pop('imageThumbnail')
+		product.pop('urlVideo')
+		product.pop('codigoFabricante')
+		product.pop('marca')
+		product.pop('class_fiscal')
+		product.pop('cest')
+		product.pop('origem')
+		product.pop('idGrupoProduto')
+		product.pop('linkExterno')
+		product.pop('observacoes')
+		product.pop('grupoProduto')
+		product.pop('garantia')
+		product.pop('descricaoFornecedor')
+		product.pop('categoria')
+		product.pop('pesoLiq')
+		product.pop('pesoBruto')
+		product.pop('gtin')
+		product.pop('gtinEmbalagem')
+		product.pop('larguraProduto')
+		product.pop('alturaProduto')
+		product.pop('profundidadeProduto')
+		product.pop('unidadeMedida')
+		product.pop('itensPorCaixa')
+		product.pop('volumes')
+		product.pop('localizacao')
+		product.pop('crossdocking')
+		product.pop('condicao')
+		product.pop('producao')
+		product.pop('freteGratis')
+		if 'producao' in product:
+			product.pop('producao')
+		product.pop('dataValidade')
+		product.pop('spedTipoItem')
+		product.pop('depositos')
+		emin = float(product['estoqueMinimo'])
+		emax = float(product['estoqueMaximo'])
+		product['estoqueMinimo'] = int(emin)
+		product['estoqueMaximo'] = int(emax)
+		product['preco'] = float(product['preco'])
+		if product['precoCusto'] is None:
+			product['precoCusto'] = 0.00
+		else:
+			product['precoCusto'] = float(product['precoCusto'])
+		return product
+
 	
 	def products(self):
 		try:
 			# opening database
-			# db = Database()
+			db = Database()
 			# getting products from api
 			products = api.get_products()
 			# opening file with products records
@@ -21,6 +71,7 @@ class Import():
 			p_file.close()
 			# checking every product
 			for product in products:
+				product = self.filter_product(product)
 				# checking if product was imported already
 				if product['id'] not in records or records[product['id']] != product:
 					if product['id'] in records:
@@ -29,17 +80,36 @@ class Import():
 						print(f'\tNEW: {diff(records[product["id"]], product)}\n')
 
 					records[product['id']] = product
+					# transpose colums and rows
+					
 					p_file = open("infra/imported/produtos.json", "w")
 					json.dump(records, p_file)
 					p_file.close()
-
-				
+					
 					# self._insert_database(table='produto', obj=product)
-				
+
 		except ApiError as e:
 			print(e.response)
 		# db.close()
 		
+	def filter_item(self, item):
+			item.pop('pesoBruto')
+			item.pop('largura')
+			item.pop('altura')
+			item.pop('profundidade')
+			item.pop('descricaoDetalhada')
+			item.pop('unidadeMedida')
+			item.pop('gtin')
+			return item
+	
+	def filter_order(self, order):
+		order.pop('observacoes')
+		order.pop('observacaointerna')
+		order.pop('numeroOrdemCompra')
+		order.pop('parcelas')
+		if 'pagamento' in order:
+			order.pop('pagamento')
+		return order
 
 	def orders(self):
 		try:
@@ -59,6 +129,8 @@ class Import():
 			ip_file.close()
 			
 			for order in orders:
+				# filtering relevant data
+				order = self.filter_order(order)
 				# splitting cliente
 				client = order['cliente']
 				order.pop('cliente')
@@ -69,14 +141,13 @@ class Import():
 				order.pop('itens')
 
 				for item in itens:
+					# filtering relevant data
+					item = self.filter_item(item['item'])
 					# referencing item to order id
-					item = item['item']
 					cod_item = item['codigo']
 					cod_item_order = f"{order['numero']}-{cod_item}"
 					item['idPedido'] = order['numero']
-					# item[cod_item_order] = item['item']
-					# item.pop('item')
-					print(item)
+
 					if cod_item_order not in ip_records or ip_records[cod_item_order] != item:
 						if cod_item_order in ip_records:
 							print(f'UPDATE: {cod_item_order}\n')

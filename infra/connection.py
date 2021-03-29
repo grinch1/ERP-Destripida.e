@@ -10,7 +10,7 @@ class Database():
   def __init__(self):
     self.connect()
     self.raw_connect()
-    # self.connect_engine()
+    self.connect_engine()
 
   def connect(self):
     try:
@@ -42,7 +42,8 @@ class Database():
       elif err.errno == errorcode.ER_BAD_DB_ERROR:
         print("Database does not exist")
       else:
-        print(err)   
+        print(err)  
+  
 
   def close(self):
        self.cnx.close()
