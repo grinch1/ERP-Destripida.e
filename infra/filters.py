@@ -1,11 +1,15 @@
+from datetime import datetime
+
 def filter_product(product):
+		product['id'] = int(product['id'])
+		if product['idFabricante'] != '':
+			product['idFabricante'] = int(product['idFabricante'])
 		product.pop('tipo')
 		product.pop('descricaoCurta')
 		product.pop('descricaoComplementar')
 		product.pop('imageThumbnail')
 		product.pop('urlVideo')
 		product.pop('codigoFabricante')
-		product.pop('marca')
 		product.pop('class_fiscal')
 		product.pop('cest')
 		product.pop('origem')
@@ -48,20 +52,38 @@ def filter_product(product):
 		return product
 
 def filter_item(item):
-  item.pop('pesoBruto')
-  item.pop('largura')
-  item.pop('altura')
-  item.pop('profundidade')
-  item.pop('descricaoDetalhada')
-  item.pop('unidadeMedida')
-  item.pop('gtin')
-  return item
+	item["quantidade"] = float(item["quantidade"])
+	item["quantidade"] = int(item["quantidade"])
+	item["valorunidade"] = float(item["valorunidade"])
+	if item['precocusto'] == None:
+		item["precocusto"] = 0.0
+	item["precocusto"] = float(item["precocusto"])
+	item["descontoItem"] = float(item["descontoItem"])
+
+	item.pop('pesoBruto')
+	item.pop('largura')
+	item.pop('altura')
+	item.pop('profundidade')
+	item.pop('descricaoDetalhada')
+	item.pop('unidadeMedida')
+	item.pop('gtin')
+	return item
 
 def filter_order(order):
-  order.pop('observacoes')
-  order.pop('observacaointerna')
-  order.pop('numeroOrdemCompra')
-  order.pop('parcelas')
-  if 'pagamento' in order:
-    order.pop('pagamento')
-  return order
+	if order['desconto'][-1:] == '%':
+		order['desconto'] = order['desconto'][0:-1]
+	order['desconto'] = order['desconto'].replace(',', '.')
+	order['desconto'] = float(order['desconto'])
+
+	order['valorfrete'] = float(order['valorfrete'])
+	order['totalprodutos'] = float(order['totalprodutos'])
+	order['totalvenda'] = float(order['totalvenda'])
+
+	order['numero'] = int(order['numero'])
+	order.pop('observacoes')
+	order.pop('observacaointerna')
+	order.pop('numeroOrdemCompra')
+	order.pop('parcelas')
+	if 'pagamento' in order:
+		order.pop('pagamento')
+	return order

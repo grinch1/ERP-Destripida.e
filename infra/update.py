@@ -22,21 +22,22 @@ class Import():
 			p_file.close()
 			# checking every product
 			for product in products:
+				product_id = product['id']
 				product = filter_product(product)
 				# checking if product was imported already
-				if product['id'] not in records or records[product['id']] != product:
-					if product['id'] in records:
-						print(f'UPDATE: {product["id"]}\n')
-						print(f'\tOLD: {diff(product, records[product["id"]])}\n')
-						print(f'\tNEW: {diff(records[product["id"]], product)}\n')
+				if product_id not in records or records[product_id] != product:
+					if product_id in records:
+						print(f'UPDATE: {product_id}\n')
+						print(f'\tOLD: {diff(product, records[product_id])}\n')
+						print(f'\tNEW: {diff(records[product_id], product)}\n')
 
-					records[product['id']] = product
+					records[product_id] = product
 					# transpose colums and rows
 					
 					p_file = open("infra/imported/produtos.json", "w")
 					json.dump(records, p_file)
 					p_file.close()
-					
+							
 					# self._insert_database(table='produto', obj=product)
 
 		except ApiError as e:
@@ -62,13 +63,15 @@ class Import():
 			ip_file.close()
 			
 			for order in orders:
+				order_id = order['numero']
 				# filtering relevant data
 				order = filter_order(order)
 				# splitting cliente
 				client = order['cliente']
+				client_id = client['id']
 				order.pop('cliente')
 				# inserting idCliente to order 
-				order['idCliente'] = client['id']
+				order['idCliente'] = int(client_id)
 				# splitting itens
 				itens = order['itens']
 				order.pop('itens')
@@ -78,7 +81,7 @@ class Import():
 					item = filter_item(item['item'])
 					# referencing item to order id
 					cod_item = item['codigo']
-					cod_item_order = f"{order['numero']}-{cod_item}"
+					cod_item_order = f"{order_id}-{cod_item}"
 					item['idPedido'] = order['numero']
 
 					if cod_item_order not in ip_records or ip_records[cod_item_order] != item:
@@ -94,24 +97,24 @@ class Import():
 					
 
 				# checking if order was imported already
-				if order['numero'] not in o_records or o_records[order['numero']] != order:
-					if order['numero'] in o_records:
-						print(f'UPDATE: {order["numero"]}\n')
-						print(f'\tOLD: {diff(order, o_records[order["numero"]])}\n')
-						print(f'\tNEW: {diff(o_records[order["numero"]], order)}\n')
+				if order_id not in o_records or o_records[order_id] != order:
+					if order_id in o_records:
+						print(f'UPDATE: {order_id}\n')
+						print(f'\tOLD: {diff(order, o_records[order_id])}\n')
+						print(f'\tNEW: {diff(o_records[order_id], order)}\n')
 					
-					o_records[order['numero']] = order
+					o_records[order_id] = order
 					o_file = open("infra/imported/pedidos.json", "w")
 					json.dump(o_records, o_file)
 					o_file.close()
 				# checking if client was imported already
-				if client['id'] not in c_records or c_records[client['id']] != client:
-					if client['id'] in c_records:
-						print(f'UPDATE: {client["id"]}\n')
-						print(f'\tOLD: {diff(client, c_records[client["id"]])}\n')
-						print(f'\tNEW: {diff(c_records[client["id"]], client)}\n')
+				if client_id not in c_records or c_records[client_id] != client:
+					if client_id in c_records:
+						print(f'UPDATE: {client_id}\n')
+						print(f'\tOLD: {diff(client, c_records[client_id])}\n')
+						print(f'\tNEW: {diff(c_records[client_id], client)}\n')
 
-					c_records[client['id']] = client
+					c_records[client_id] = client
 					c_file = open("infra/imported/clientes.json", "w")
 					json.dump(c_records, c_file)
 					c_file.close()
