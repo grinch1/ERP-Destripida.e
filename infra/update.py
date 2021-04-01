@@ -69,6 +69,7 @@ class Import():
 				# splitting cliente
 				client = order['cliente']
 				client_id = client['id']
+				client = filter_client(client)
 				order.pop('cliente')
 				# inserting idCliente to order 
 				order['idCliente'] = int(client_id)
@@ -125,28 +126,33 @@ class Import():
 		# db.close(
 
 
-	def receivable(self):
+	def accounts(self):
 		try:
 			#db = Database()
-			accounts_r = api.get_accounts_receivable()
+			accounts = api.get_accounts_receivable()
 
-			# opening file with account_r records
-			tr_file = open ("infra/imported/contas_receber.json", "r")
-			records = json.load(tr_file)
-			tr_file.close()
-			for account_r in accounts_r:
-				# checking if account_r was imported already
-				if account_r['id'] not in records or records[account_r['id']] != account_r:
-					if account_r['id'] in records:
-						print(f'UPDATE: {account_r["id"]}\n')
-						print(f'\tOLD: {diff(account_r, records[account_r["id"]])}\n')
-						print(f'\tNEW: {diff(records[account_r["id"]], account_r)}\n')
+			# opening file with account records
+			a_file = open ("infra/imported/contas_receber.json", "r")
+			records = json.load(a_file)
+			a_file.close()
 
-					records[account_r['id']] = account_r
-					o_file = open("infra/imported/contas_receber.json", "w")
-					json.dump(records, o_file)
-					o_file.close()
-			 # checking every account_r
+			for account in accounts:
+				account_id = account['id']
+				account = filter_account(account)
+				if account == {}:
+					break
+				# checking if account was imported already
+				if account_id not in records or records[account_id] != account:
+					if account_id in records:
+						print(f'UPDATE: {account_id}\n')
+						print(f'\tOLD: {diff(account, records[account_id])}\n')
+						print(f'\tNEW: {diff(records[account_id], account)}\n')
+
+					records[account_id] = account
+					a_file = open("infra/imported/contas_receber.json", "w")
+					json.dump(records, a_file)
+					a_file.close()
+			 # checking every account
 
 		except ApiError as e:
 			print(e.response)

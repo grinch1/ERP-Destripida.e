@@ -51,6 +51,12 @@ def filter_product(product):
 			product['precoCusto'] = float(product['precoCusto'])
 		return product
 
+def filter_client(client):
+	client['cpf'] = client['cnpj']
+	client['id'] = int(client['id'])
+	client.pop('cnpj')
+	client.pop('ie')
+
 def filter_item(item):
 	item["quantidade"] = float(item["quantidade"])
 	item["quantidade"] = int(item["quantidade"])
@@ -87,3 +93,17 @@ def filter_order(order):
 	if 'pagamento' in order:
 		order.pop('pagamento')
 	return order
+
+def filter_account(account):
+	if account['situacao'] == 'pago':
+		return {}
+
+	account['id'] = int(account['id'])
+	account['valor'] = float(account['valor'])
+	account['saldo'] = float(account['saldo'])
+
+	account.pop('linkBoleto')
+	account['pagamento'].pop('borderos')
+	account['idCliente'] = int(account['cliente']['idContato'])
+	account.pop('cliente')
+	return account
