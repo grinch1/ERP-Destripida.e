@@ -4,6 +4,8 @@ def filter_product(product):
 		product['id'] = int(product['id'])
 		if product['idFabricante'] != '':
 			product['idFabricante'] = int(product['idFabricante'])
+		else:
+			product['idFabricante'] = 0
 		product.pop('tipo')
 		product.pop('descricaoCurta')
 		product.pop('descricaoComplementar')
@@ -86,6 +88,7 @@ def filter_order(order):
 	order['totalvenda'] = float(order['totalvenda'])
 
 	order['numero'] = int(order['numero'])
+	order['loja'] = int(order['loja'])
 	order.pop('observacoes')
 	order.pop('observacaointerna')
 	order.pop('numeroOrdemCompra')

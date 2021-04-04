@@ -1,8 +1,8 @@
-import mysql.connector  
 from infra.api import Api, ApiError
 from infra.apiKey import api_key
-from infra.filters import *
 from infra.connection import Database
+from infra.filters import *
+from infra.insert import * 
 import pandas as pd
 import json
 from jsondiff import diff
@@ -13,7 +13,7 @@ class Import():
 	def products(self):
 		try:
 			# opening database
-			# db = Database()
+			db = Database()
 			# getting products from api
 			products = api.get_products()
 			# opening file with products records
@@ -25,29 +25,43 @@ class Import():
 				product_id = product['id']
 				product = filter_product(product)
 				# checking if product was imported already
-				if product_id not in records or records[product_id] != product:
-					if product_id in records:
+				if product_id not in records:
+					records[product_id] = product
+
+					# inserting product into database
+					db.cursor.execute(query_insert_product(), product)
+					# making sure data is committed to the database
+					db.cnx.commit()
+					print(f'INSERTED {product_id}')
+
+					p_file = open("infra/imported/produtos.json", "w")
+					json.dump(records, p_file)
+					p_file.close()
+				# if the product was already imported but we need to update it
+				elif records[product_id] != product:
 						print(f'UPDATE: {product_id}\n')
 						print(f'\tOLD: {diff(product, records[product_id])}\n')
 						print(f'\tNEW: {diff(records[product_id], product)}\n')
 
-					records[product_id] = product
-					# transpose colums and rows
-					
-					p_file = open("infra/imported/produtos.json", "w")
-					json.dump(records, p_file)
-					p_file.close()
-							
-					# self._insert_database(table='produto', obj=product)
+						records[product_id] = product
+
+						# updating product into database
+						db.cursor.execute(query_update_product(), product)
+						# making sure data is committed to the database
+						db.cnx.commit()
+
+						p_file = open("infra/imported/produtos.json", "w")
+						json.dump(records, p_file)
+						p_file.close()
+			# closing database
+			db.close()
 
 		except ApiError as e:
 			print(e.response)
-		# db.close()
 		
 
 	def orders(self):
 		try:
-			# db = Database()
 			orders = api.get_orders()
 			# opening file with order records
 			o_file = open("infra/imported/pedidos.json", "r")
@@ -84,6 +98,7 @@ class Import():
 					cod_item = item['codigo']
 					cod_item_order = f"{order_id}-{cod_item}"
 					item['idPedido'] = order['numero']
+					item['idItem'] = cod_item_order
 
 					if cod_item_order not in ip_records or ip_records[cod_item_order] != item:
 						if cod_item_order in ip_records:
@@ -95,7 +110,6 @@ class Import():
 						ip_file = open("infra/imported/itens_pedido.json", "w")
 						json.dump(ip_records, ip_file)
 						ip_file.close()
-					
 
 				# checking if order was imported already
 				if order_id not in o_records or o_records[order_id] != order:
@@ -119,16 +133,13 @@ class Import():
 					c_file = open("infra/imported/clientes.json", "w")
 					json.dump(c_records, c_file)
 					c_file.close()
-					# self._insert_database(table='pedido', obj=order)
 
 		except ApiError as e:
 			print(e.response)
-		# db.close(
 
 
 	def accounts(self):
 		try:
-			#db = Database()
 			accounts = api.get_accounts_receivable()
 
 			# opening file with account records
@@ -152,10 +163,8 @@ class Import():
 					a_file = open("infra/imported/contas_receber.json", "w")
 					json.dump(records, a_file)
 					a_file.close()
-			 # checking every account
 
 		except ApiError as e:
 			print(e.response)
-	
 	
 	

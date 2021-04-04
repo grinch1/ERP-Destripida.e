@@ -1,7 +1,7 @@
 
 -- Product Insert
 INSERT INTO `destripida`.`produto`
-(`idproduto`,
+(`idProduto`,
 `codigo`,
 `descricao`,
 `situacao`,
@@ -9,7 +9,7 @@ INSERT INTO `destripida`.`produto`
 `preco`,
 `precoCusto`,
 `dataInclusao`,
-`dataAteracao`,
+`dataAlteracao`,
 `nomeFornecedor`,
 `marca`,
 `idFabricante`,
@@ -24,14 +24,31 @@ VALUES
 <{preco: }>,
 <{precoCusto: }>,
 <{dataInclusao: }>,
-<{dataAteracao: }>,
+<{dataAlteracao: }>,
 <{nomeFornecedor: }>,
 <{marca: }>,
 <{idFabricante: }>,
 <{estoqueMinimo: }>,
 <{estoqueMaximo: }>);
 
-
+--Product Update
+UPDATE `destripida`.`produto`
+SET
+`codigo` = <{codigo: }>,
+`idProduto` = <{idProduto: }>,
+`descricao` = <{descricao: }>,
+`situacao` = <{situacao: }>,
+`unidade` = <{unidade: }>,
+`preco` = <{preco: }>,
+`precoCusto` = <{precoCusto: }>,
+`dataInclusao` = <{dataInclusao: }>,
+`dataAlteracao` = <{dataAlteracao: }>,
+`nomeFornecedor` = <{nomeFornecedor: }>,
+`marca` = <{marca: }>,
+`idFabricante` = <{idFabricante: }>,
+`estoqueMinimo` = <{estoqueMinimo: }>,
+`estoqueMaximo` = <{estoqueMaximo: }>
+WHERE `codigo` = <{expr}>;
 
 
 -- Client Insert

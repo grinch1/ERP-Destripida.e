@@ -2,7 +2,7 @@ from infra.update import Import
 
 update = Import()
 update.products()
-update.orders()
-update.accounts()
+# update.orders()
+# update.accounts()
 
 

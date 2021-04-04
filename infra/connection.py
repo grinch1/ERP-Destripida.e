@@ -9,8 +9,9 @@ class Database():
 
   def __init__(self):
     self.connect()
-    self.raw_connect()
-    self.connect_engine()
+    # self.raw_connect()
+    # self.connect_engine()
+    self.cursor = self.cnx.cursor()
 
   def connect(self):
     try:
@@ -46,5 +47,6 @@ class Database():
   
 
   def close(self):
-       self.cnx.close()
-       self.raw_cnx.close() 
+    self.cnx.close()
+    # self.raw_cnx.close() 
+    self.cursor.close()
