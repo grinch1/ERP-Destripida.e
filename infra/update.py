@@ -32,14 +32,14 @@ class Import():
 					db.cursor.execute(query_insert_product(), product)
 					# making sure data is committed to the database
 					db.cnx.commit()
-					print(f'INSERTED {product_id}')
+					print(f'INSERTED PRODUCT: {product_id}')
 
 					p_file = open("infra/imported/produtos.json", "w")
 					json.dump(records, p_file)
 					p_file.close()
 				# if the product was already imported but we need to update it
 				elif records[product_id] != product:
-						print(f'UPDATE: {product_id}\n')
+						print(f'UPDATE PRODUCT: {product_id}\n')
 						print(f'\tOLD: {diff(product, records[product_id])}\n')
 						print(f'\tNEW: {diff(records[product_id], product)}\n')
 
@@ -62,6 +62,8 @@ class Import():
 
 	def orders(self):
 		try:
+			# opening database
+			db = Database()
 			orders = api.get_orders()
 			# opening file with order records
 			o_file = open("infra/imported/pedidos.json", "r")
@@ -90,6 +92,36 @@ class Import():
 				# splitting itens
 				itens = order['itens']
 				order.pop('itens')
+				
+				# checking if client was imported already
+				if client_id not in c_records:
+					c_records[client_id] = client
+
+					c_file = open("infra/imported/clientes.json", "w")
+					json.dump(c_records, c_file)
+					c_file.close()
+
+					# inserting client into database
+					db.cursor.execute(query_insert_client(), client)
+					# making sure data is committed to the database
+					db.cnx.commit()
+					print(f'INSERTED CLIENT: {client_id}')
+
+				elif c_records[client_id] != client:
+					print(f'UPDATE CLIENT: {client_id}\n')
+					print(f'\tOLD: {diff(client, c_records[client_id])}\n')
+					print(f'\tNEW: {diff(c_records[client_id], client)}\n')
+
+					c_records[client_id] = client
+
+					# updating client on database
+					db.cursor.execute(query_update_client(), client)
+					# making sure data is committed to the database
+					db.cnx.commit()
+
+					c_file = open("infra/imported/clientes.json", "w")
+					json.dump(c_records, c_file)
+					c_file.close()
 
 				for item in itens:
 					# filtering relevant data
@@ -100,40 +132,68 @@ class Import():
 					item['idPedido'] = order['numero']
 					item['idItem'] = cod_item_order
 
-					if cod_item_order not in ip_records or ip_records[cod_item_order] != item:
-						if cod_item_order in ip_records:
-							print(f'UPDATE: {cod_item_order}\n')
-							print(f'\tOLD: {diff(item, ip_records[cod_item_order])}\n')
-							print(f'\tNEW: {diff(ip_records[cod_item_order], item)}\n')
-						
+					if cod_item_order not in ip_records:
 						ip_records[cod_item_order] = item
+
 						ip_file = open("infra/imported/itens_pedido.json", "w")
 						json.dump(ip_records, ip_file)
 						ip_file.close()
 
+						# inserting item into database
+						db.cursor.execute(query_insert_item(), item)
+						# making sure data is committed to the database
+						db.cnx.commit()
+						print(f'INSERTED ITEM: {cod_item_order}')
+
+
+					elif ip_records[cod_item_order] != item:
+						print(f'UPDATE ITEM: {cod_item_order}\n')
+						print(f'\tOLD: {diff(item, ip_records[cod_item_order])}\n')
+						print(f'\tNEW: {diff(ip_records[cod_item_order], item)}\n')
+						
+						ip_records[cod_item_order] = item
+
+						# updating item on database
+						db.cursor.execute(query_update_item(), item)
+						# making sure data is committed to the database
+						db.cnx.commit()
+
+						ip_file = open("infra/imported/itens_pedido.json", "w")
+						json.dump(ip_records, ip_file)
+						ip_file.close()
+
+
 				# checking if order was imported already
-				if order_id not in o_records or o_records[order_id] != order:
-					if order_id in o_records:
-						print(f'UPDATE: {order_id}\n')
-						print(f'\tOLD: {diff(order, o_records[order_id])}\n')
-						print(f'\tNEW: {diff(o_records[order_id], order)}\n')
-					
+				if order_id not in o_records:
 					o_records[order_id] = order
+
 					o_file = open("infra/imported/pedidos.json", "w")
 					json.dump(o_records, o_file)
 					o_file.close()
-				# checking if client was imported already
-				if client_id not in c_records or c_records[client_id] != client:
-					if client_id in c_records:
-						print(f'UPDATE: {client_id}\n')
-						print(f'\tOLD: {diff(client, c_records[client_id])}\n')
-						print(f'\tNEW: {diff(c_records[client_id], client)}\n')
 
-					c_records[client_id] = client
-					c_file = open("infra/imported/clientes.json", "w")
-					json.dump(c_records, c_file)
-					c_file.close()
+					# inserting order into database
+					db.cursor.execute(query_insert_order(), order)
+					# making sure data is committed to the database
+					db.cnx.commit()
+					print(f'INSERTED ORDER: {order_id}')
 
+				elif o_records[order_id] != order:
+					print(f'UPDATE ORDER: {order_id}\n')
+					print(f'\tOLD: {diff(order, o_records[order_id])}\n')
+					print(f'\tNEW: {diff(o_records[order_id], order)}\n')
+					
+					o_records[order_id] = order
+
+					# updating order on database
+					db.cursor.execute(query_update_order(), order)
+					# making sure data is committed to the database
+					db.cnx.commit()
+
+					o_file = open("infra/imported/pedidos.json", "w")
+					json.dump(o_records, o_file)
+					o_file.close()
+			# closing database
+			db.close()
 		except ApiError as e:
 			print(e.response)
 
@@ -166,5 +226,3 @@ class Import():
 
 		except ApiError as e:
 			print(e.response)
-	
-	

@@ -58,6 +58,7 @@ def filter_client(client):
 	client['id'] = int(client['id'])
 	client.pop('cnpj')
 	client.pop('ie')
+	return client
 
 def filter_item(item):
 	item["quantidade"] = float(item["quantidade"])
@@ -75,6 +76,7 @@ def filter_item(item):
 	item.pop('descricaoDetalhada')
 	item.pop('unidadeMedida')
 	item.pop('gtin')
+	item.pop('un')
 	return item
 
 def filter_order(order):
@@ -88,7 +90,8 @@ def filter_order(order):
 	order['totalvenda'] = float(order['totalvenda'])
 
 	order['numero'] = int(order['numero'])
-	order['loja'] = int(order['loja'])
+	if 'loja' in order:
+		order.pop('loja')
 	order.pop('observacoes')
 	order.pop('observacaointerna')
 	order.pop('numeroOrdemCompra')
