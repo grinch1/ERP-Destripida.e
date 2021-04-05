@@ -2,3 +2,4 @@ __pycache__/
 apiKey.py
 infra/config.py
 *.json
+*.sh
