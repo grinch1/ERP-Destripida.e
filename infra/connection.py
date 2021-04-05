@@ -1,4 +1,4 @@
-from infra.config import config ,url
+from infra.config import config, url
 import mysql.connector
 from mysql.connector.cursor import MySQLCursor
 from mysql.connector import errorcode
@@ -60,7 +60,8 @@ class Database():
       self.cnx.commit()
       print(f'INSERTED PRODUCT: {product["id"]}')
     except mysql.connector.Error as err:
-        print(err)
+      if err.errno == 1062:
+        print(err.msg)
 
 
   def update_product(self, product):
@@ -86,7 +87,7 @@ class Database():
       self.cursor.execute(update_product, product)
       self.cnx.commit()
     except mysql.connector.Error as err:
-        print(err)
+      print(err)
 
 
   def insert_client(self, client):
@@ -103,7 +104,8 @@ class Database():
       self.cnx.commit()
       print(f'INSERTED CLIENT: {client["id"]}')
     except mysql.connector.Error as err:
-        print(err)
+      if err.errno == 1062:
+        print(err.msg)
 
 
   def update_client(self, client):
@@ -129,7 +131,7 @@ class Database():
       self.cursor.execute(update_client, client)
       self.cnx.commit()
     except mysql.connector.Error as err:
-        print(err)
+      print(err)
 
 
   def insert_item(self, item):
@@ -145,7 +147,8 @@ class Database():
       self.cnx.commit()
       print(f'INSERTED ITEM: {item["id"]}')
     except mysql.connector.Error as err:
-        print(err)
+      if err.errno == 1062:
+        print(err.msg)
 
 
   def update_item(self, item):
@@ -163,7 +166,7 @@ class Database():
       self.cursor.execute(update_item, item)
       self.cnx.commit()
     except mysql.connector.Error as err:
-        print(err)
+      print(err)
 
 
   def insert_order(self, order):
@@ -180,7 +183,8 @@ class Database():
       self.cnx.commit()
       print(f'INSERTED ITEM: {order["id"]}')
     except mysql.connector.Error as err:
-        print(err)
+      if err.errno == 1062:
+        print(err.msg)
 
 
   def update_order(self, order):
@@ -201,7 +205,7 @@ class Database():
       self.cursor.execute(update_order, order)
       self.cnx.commit()
     except mysql.connector.Error as err:
-        print(err)
+      print(err)
 
   def close(self):
     self.cnx.close()
