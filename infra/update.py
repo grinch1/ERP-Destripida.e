@@ -2,7 +2,6 @@ from infra.api import Api, ApiError
 from infra.apiKey import api_key
 from infra.connection import Database
 from infra.filters import *
-from infra.insert import * 
 import pandas as pd
 import json
 from jsondiff import diff
@@ -29,10 +28,7 @@ class Import():
 					records[product_id] = product
 
 					# inserting product into database
-					db.cursor.execute(query_insert_product(), product)
-					# making sure data is committed to the database
-					db.cnx.commit()
-					print(f'INSERTED PRODUCT: {product_id}')
+					db.insert_product(product)
 
 					p_file = open("infra/imported/produtos.json", "w")
 					json.dump(records, p_file)
@@ -46,9 +42,7 @@ class Import():
 					records[product_id] = product
 
 					# updating product into database
-					db.cursor.execute(query_update_product(), product)
-					# making sure data is committed to the database
-					db.cnx.commit()
+					db.update_product(product)
 
 					p_file = open("infra/imported/produtos.json", "w")
 					json.dump(records, p_file)
@@ -57,7 +51,7 @@ class Import():
 			db.close()
 
 		except ApiError as e:
-			print(e.response)
+			print(e.response)		
 		
 
 	def orders(self):
@@ -98,10 +92,7 @@ class Import():
 					c_records[client_id] = client
 
 					# inserting client into database
-					db.cursor.execute(query_insert_client(), client)
-					# making sure data is committed to the database
-					db.cnx.commit()
-					print(f'INSERTED CLIENT: {client_id}')
+					db.insert_client(client)
 					
 					c_file = open("infra/imported/clientes.json", "w")
 					json.dump(c_records, c_file)
@@ -114,10 +105,8 @@ class Import():
 
 					c_records[client_id] = client
 
-					# updating client on database
-					db.cursor.execute(query_update_client(), client)
-					# making sure data is committed to the database
-					db.cnx.commit()
+					# updating client into database
+					db.update_client(client)
 
 					c_file = open("infra/imported/clientes.json", "w")
 					json.dump(c_records, c_file)
@@ -135,16 +124,12 @@ class Import():
 					if cod_item_order not in ip_records:
 						ip_records[cod_item_order] = item
 
+						# inserting item into database
+						db.insert_item(item)
+						
 						ip_file = open("infra/imported/itens_pedido.json", "w")
 						json.dump(ip_records, ip_file)
 						ip_file.close()
-
-						# inserting item into database
-						db.cursor.execute(query_insert_item(), item)
-						# making sure data is committed to the database
-						db.cnx.commit()
-						print(f'INSERTED ITEM: {cod_item_order}')
-
 
 					elif ip_records[cod_item_order] != item:
 						print(f'UPDATE ITEM: {cod_item_order}\n')
@@ -153,10 +138,8 @@ class Import():
 						
 						ip_records[cod_item_order] = item
 
-						# updating item on database
-						db.cursor.execute(query_update_item(), item)
-						# making sure data is committed to the database
-						db.cnx.commit()
+						# updating item into database
+						db.update_item(item)
 
 						ip_file = open("infra/imported/itens_pedido.json", "w")
 						json.dump(ip_records, ip_file)
@@ -172,10 +155,7 @@ class Import():
 					o_file.close()
 
 					# inserting order into database
-					db.cursor.execute(query_insert_order(), order)
-					# making sure data is committed to the database
-					db.cnx.commit()
-					print(f'INSERTED ORDER: {order_id}')
+					db.insert_order(order)
 
 				elif o_records[order_id] != order:
 					print(f'UPDATE ORDER: {order_id}\n')
@@ -185,9 +165,7 @@ class Import():
 					o_records[order_id] = order
 
 					# updating order on database
-					db.cursor.execute(query_update_order(), order)
-					# making sure data is committed to the database
-					db.cnx.commit()
+					db.update_order(order)
 
 					o_file = open("infra/imported/pedidos.json", "w")
 					json.dump(o_records, o_file)
