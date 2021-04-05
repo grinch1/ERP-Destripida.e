@@ -39,20 +39,20 @@ class Import():
 					p_file.close()
 				# if the product was already imported but we need to update it
 				elif records[product_id] != product:
-						print(f'UPDATE PRODUCT: {product_id}\n')
-						print(f'\tOLD: {diff(product, records[product_id])}\n')
-						print(f'\tNEW: {diff(records[product_id], product)}\n')
+					print(f'UPDATE PRODUCT: {product_id}\n')
+					print(f'\tOLD: {diff(product, records[product_id])}\n')
+					print(f'\tNEW: {diff(records[product_id], product)}\n')
 
-						records[product_id] = product
+					records[product_id] = product
 
-						# updating product into database
-						db.cursor.execute(query_update_product(), product)
-						# making sure data is committed to the database
-						db.cnx.commit()
+					# updating product into database
+					db.cursor.execute(query_update_product(), product)
+					# making sure data is committed to the database
+					db.cnx.commit()
 
-						p_file = open("infra/imported/produtos.json", "w")
-						json.dump(records, p_file)
-						p_file.close()
+					p_file = open("infra/imported/produtos.json", "w")
+					json.dump(records, p_file)
+					p_file.close()
 			# closing database
 			db.close()
 
@@ -97,15 +97,15 @@ class Import():
 				if client_id not in c_records:
 					c_records[client_id] = client
 
-					c_file = open("infra/imported/clientes.json", "w")
-					json.dump(c_records, c_file)
-					c_file.close()
-
 					# inserting client into database
 					db.cursor.execute(query_insert_client(), client)
 					# making sure data is committed to the database
 					db.cnx.commit()
 					print(f'INSERTED CLIENT: {client_id}')
+					
+					c_file = open("infra/imported/clientes.json", "w")
+					json.dump(c_records, c_file)
+					c_file.close()
 
 				elif c_records[client_id] != client:
 					print(f'UPDATE CLIENT: {client_id}\n')

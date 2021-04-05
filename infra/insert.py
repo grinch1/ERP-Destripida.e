@@ -5,11 +5,11 @@ def query_insert_product():
   add_product = ("""
     INSERT INTO produto
       (idProduto, codigo, descricao, situacao, unidade, preco, precoCusto, dataInclusao, 
-      dataAlteracao, nomeFornecedor, marca, idFabricante, estoqueMinimo, estoqueMaximo)
+      dataAlteracao, nomeFornecedor, marca, idFabricante, estoqueMinimo, estoqueMaximo, estoqueAtual)
   	VALUES
     (%(id)s, %(codigo)s, %(descricao)s, %(situacao)s, %(unidade)s, %(preco)s, 
       %(precoCusto)s, %(dataInclusao)s, %(dataAlteracao)s, %(nomeFornecedor)s, 
-      %(marca)s, %(idFabricante)s, %(estoqueMinimo)s, %(estoqueMaximo)s)""")
+      %(marca)s, %(idFabricante)s, %(estoqueMinimo)s, %(estoqueMaximo)s, %(estoqueAtual)s)""")
 
   return add_product
 
@@ -31,6 +31,7 @@ def query_update_product():
       idFabricante = %(idFabricante)s,
       estoqueMinimo = %(estoqueMinimo)s,
       estoqueMaximo = %(estoqueMaximo)s 
+      estoqueAtual = %(estoqueAtual)s 
     WHERE codigo = %(id)s""")
   
   return update_product
