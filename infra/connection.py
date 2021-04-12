@@ -145,7 +145,7 @@ class Database():
       
       self.cursor.execute(add_item, item)
       self.cnx.commit()
-      print(f'INSERTED ITEM: {item["id"]}')
+      print(f'INSERTED ITEM: {item["idItem"]}')
     except mysql.connector.Error as err:
       if err.errno == 1062:
         print(err.msg)
@@ -156,12 +156,11 @@ class Database():
       update_item = ("""
         UPDATE item
           SET
+            codProduto = %(codigo)s,
             descricao = %(descricao)s,
             quantidade = %(quantidade)s,
             valorunidade = %(valorunidade)s,
-            un = %(un)s,
             idPedido = %(idPedido)s,
-            idProduto = %(idProduto)s,
           WHERE idItem = %(idItem)s""")
       self.cursor.execute(update_item, item)
       self.cnx.commit()
@@ -181,7 +180,7 @@ class Database():
       
       self.cursor.execute(add_order, order)
       self.cnx.commit()
-      print(f'INSERTED ITEM: {order["id"]}')
+      print(f'INSERTED ORDER: {order["numero"]}')
     except mysql.connector.Error as err:
       if err.errno == 1062:
         print(err.msg)
