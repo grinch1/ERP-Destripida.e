@@ -81,7 +81,7 @@ class Database():
             marca = %(marca)s,
             idFabricante = %(idFabricante)s,
             estoqueMinimo = %(estoqueMinimo)s,
-            estoqueMaximo = %(estoqueMaximo)s 
+            estoqueMaximo = %(estoqueMaximo)s,
             estoqueAtual = %(estoqueAtual)s 
           WHERE codigo = %(id)s""")
       self.cursor.execute(update_product, product)
