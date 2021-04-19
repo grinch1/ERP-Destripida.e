@@ -83,11 +83,12 @@ class Database():
             estoqueMinimo = %(estoqueMinimo)s,
             estoqueMaximo = %(estoqueMaximo)s,
             estoqueAtual = %(estoqueAtual)s 
-          WHERE codigo = %(id)s""")
+          WHERE idProduto = %(id)s""")
       self.cursor.execute(update_product, product)
       self.cnx.commit()
     except mysql.connector.Error as err:
-      print(err)
+        print(product)
+        print(err)
 
 
   def insert_client(self, client):
