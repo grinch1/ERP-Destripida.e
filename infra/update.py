@@ -84,8 +84,11 @@ class Import():
 				# inserting idCliente to order 
 				order['idCliente'] = int(client_id)
 				# splitting itens
-				itens = order['itens']
-				order.pop('itens')
+				if 'itens' in order.keys():
+					itens = order['itens']
+					order.pop('itens')
+				else:
+					itens = []
 				
 				# checking if client was imported already
 				if client_id not in c_records:
