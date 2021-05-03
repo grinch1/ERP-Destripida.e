@@ -161,7 +161,7 @@ class Database():
             descricao = %(descricao)s,
             quantidade = %(quantidade)s,
             valorunidade = %(valorunidade)s,
-            idPedido = %(idPedido)s,
+            idPedido = %(idPedido)s
           WHERE idItem = %(idItem)s""")
       self.cursor.execute(update_item, item)
       self.cnx.commit()
