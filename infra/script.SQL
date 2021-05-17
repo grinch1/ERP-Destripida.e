@@ -43,6 +43,7 @@ CREATE TABLE `pedido` (
   `totalprodutos` double DEFAULT NULL,
   `totalvenda` double DEFAULT NULL,
   `situacao` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `pagamento` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `dataSaida` date DEFAULT NULL,
   PRIMARY KEY (`idPedido`),
   UNIQUE KEY `idPedido_UNIQUE` (`idPedido`),
@@ -87,10 +88,10 @@ VALUES
 
 INSERT INTO `destripida`.`pedido`
 (`idPedido`, `idCliente`, `desconto`, `data`, `vendedor`, `valorfrete`, 
-`totalprodutos`, `totalvenda`, `situacao`, `dataSaida`)
+`totalprodutos`, `totalvenda`, `situacao`, `pagamento`,  `dataSaida`)
 VALUES
 (<{idPedido: }>, <{idCliente: }>, <{desconto: }>, <{data: }>, <{vendedor: }>, 
-<{valorfrete: }>, <{totalprodutos: }>, <{totalvenda: }>, <{situacao: }>, <{dataSaida: }>);
+<{valorfrete: }>, <{totalprodutos: }>, <{totalvenda: }>, <{situacao: }>, <{pagamento: }>,  <{dataSaida: }>);
 
 INSERT INTO `destripida`.`produto`
 (`idProduto`, `codigo`, `descricao`, `situacao`, `unidade`, `preco`, 
