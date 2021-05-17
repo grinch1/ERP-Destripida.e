@@ -95,6 +95,7 @@ def filter_order(order):
 	order.pop('observacoes')
 	order.pop('observacaointerna')
 	order.pop('numeroOrdemCompra')
+	order['formaDePagamento'] = order['parcelas'][0]['parcela']['forma_pagamento']['descricao']
 	order.pop('parcelas')
 	if 'pagamento' in order:
 		order.pop('pagamento')

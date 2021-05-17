@@ -174,10 +174,10 @@ class Database():
       add_order = ("""
         INSERT INTO pedido
         (idPedido, idCliente, desconto, data, vendedor, valorfrete, 
-        totalprodutos, totalvenda, situacao, dataSaida)
+        totalprodutos, totalvenda, situacao, dataSaida, pagamento)
         VALUES
         (%(numero)s, %(idCliente)s, %(desconto)s, %(data)s, %(vendedor)s, 
-        %(valorfrete)s, %(totalprodutos)s, %(totalvenda)s, %(situacao)s, %(dataSaida)s)""")
+        %(valorfrete)s, %(totalprodutos)s, %(totalvenda)s, %(situacao)s, %(dataSaida)s, %(formaDePagamento)s)""")
       
       self.cursor.execute(add_order, order)
       self.cnx.commit()
@@ -200,7 +200,8 @@ class Database():
             totalprodutos = %(totalprodutos)s,
             totalvenda = %(totalvenda)s,
             situacao = %(situacao)s,
-            dataSaida = %(dataSaida)s
+            dataSaida = %(dataSaida)s,
+            pagamento = %(formaDePagamento)s
           WHERE idPedido = %(numero)s""")
       self.cursor.execute(update_order, order)
       self.cnx.commit()

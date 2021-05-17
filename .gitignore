@@ -3,3 +3,4 @@ apiKey.py
 infra/config.py
 *.json
 *.sh
+*.DS_store
